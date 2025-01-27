@@ -1,11 +1,11 @@
 function [time, v, sp_time, sp_count] = integrate_and_fire(dt,tot_time, VL, Vth, tau, R, tau_rp, I, Isyn)
 
-% Esta funci�n simula un modelo IF neuronal
-% Calculando el rate de spikes en el tiempo podremos visualizar el output
+% Esta funcion simula un modelo IF neuronal
+% Calculando oel rate de spikes en el tiempo podremos visualizar el output
 % de las neuronas de diferentes maneras:
 %           1. Raster Plot (spike over time) - cada punto es un spike
-%           2. Membrane Potential Plot (V de la membrana en funci�n del tiempo)  
-% Tambi�n podremos visualizar el input dada una corriente o un tren de
+%           2. Membrane Potential Plot (V de la membrana en funcion del tiempo)  
+% Tambien podremos visualizar el input dada una corriente o un tren de
 % spikes
 
 % I sera la corriente de input, R la resistencia de la membrana
@@ -13,9 +13,9 @@ function [time, v, sp_time, sp_count] = integrate_and_fire(dt,tot_time, VL, Vth,
 % es decir Itotal = I + Isyn.
 % dt es el paso de integracion en segundos
 % tau_rp es el tiempo refractario en segundos
-% tot_time es el tiempo de simulaci�n en segundos!!!
-
-max_steps = tot_time/dt; %maximo numero de pasos donde cada paso es definido por dt !
+% tot_time es el tiempo de simulacion en segundos!!!
+total_time = 1;
+max_steps = total_time /dt; %maximo numero de pasos donde cada paso es definido por dt !
 time = 0:dt:tot_time-dt; % vector de tiempos, el eje x en los plots
 
 %Potencial de membrana
@@ -39,18 +39,19 @@ if isempty(Isyn), Isyn = zeros(1,max_steps); end % por compatibilidad
 for n=2:max_steps  % como ya hemos definido v(1), empezamos el bucle en el segundo paso
     if time(n) - last_spike > tau_rp
         % 2. Describe la dinamica del potencial de membrana (como en las instrucciones)
-        F = (1/tau)*(VL - v(n-1) + R*(I + Isyn(n-1))); % ! la equation differential
-        v(n) = v(n-1) + dt*F; % ! la solution particular
+        F = (1/tau)*(VL - v(n-1) + R*(I + Isyn(n-1)));% ! la equation differential
+        v(n) = v(n-1)+dt*F; % ! la solution particular
     else
         % 3. Describe lo que pasa en reposo
         v(n) = v0; % !
     end
     % 4. Describe las condiciones necesarias para el mecanismo de spikes
-    if v(n) >= Vth %!cumplir
-        v(n) = Vth;
-        sp_count = sp_count + 1; % actualiza el contador de spikes !
+    if v(n) >= Vth  %!cumplir
+        sp_count = sp_count+1; % actualiza el contador de spikes !
         sp_time(sp_count) = time(n); % guarda el tiempo (en segundos) del spike !
         last_spike = n*dt; % actualizado para calcular el periodo refractario
+        v(n) = Vth;
+        %v(n) = VL; ??
     end
 end
 
